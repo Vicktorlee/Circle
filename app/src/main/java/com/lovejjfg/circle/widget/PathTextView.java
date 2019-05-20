@@ -26,10 +26,6 @@ import com.lovejjfg.circle.listener.SimpleAnimatorListener;
 
 import java.util.ArrayList;
 
-/**
- * Created by Joe on 2016-06-14
- * Email: lovejjfg@gmail.com
- */
 public class PathTextView extends View {
     private static final String TAG = PathTextView.class.getSimpleName();
 
@@ -54,10 +50,10 @@ public class PathTextView extends View {
     private float radioCenterX;
     private float radioCenterY;
     private int currentHeight;
-    private float dXXX;//x方向的偏移量
+    private float dXXX;//文字x方向的偏移量
 
 
-    private float amplitude = 100.0f;//振幅
+    private float amplitude = 300.0f;//振幅
     private Bitmap currentBitmap;
     private int currentIndex;
     private float fraction;
@@ -152,7 +148,8 @@ public class PathTextView extends View {
                 fraction = animation.getAnimatedFraction();
                 float f = (Float) animation.getAnimatedValue();
                 if (Mode == Bounce && (int) (defaultY - textHeight + density) == (int) (f) && !offsetAnimator.isRunning()) {
-                    dXXX = (left ? radioCenterX * fraction : radioCenterX * fraction * -1.0f);
+//                    dXXX = (left ? radioCenterX * fraction : radioCenterX * fraction * -1.0f);
+                    dXXX=radioCenterX*fraction;
                     offsetAnimator.cancel();
                     offsetAnimator.setDuration(100);
                     offsetAnimator.setFloatValues(defaultY, defaultY + 50, defaultY);

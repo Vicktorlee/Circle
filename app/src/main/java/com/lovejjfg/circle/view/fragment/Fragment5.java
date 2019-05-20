@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.lovejjfg.circle.R;
 import com.lovejjfg.circle.anim.drawable.StrokeGradientDrawable;
+import com.lovejjfg.circle.widget.BounceIconView;
 import com.lovejjfg.circle.widget.IndexBar;
 import com.lovejjfg.circle.widget.PathTextView;
 
@@ -32,7 +33,7 @@ public class Fragment5 extends Fragment {
      * fragment.
      */
     @BindView(R.id.ptv)
-    PathTextView mPtv;
+    BounceIconView mPtv;
     @BindView(R.id.index)
     IndexBar mIndex;
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -109,19 +110,19 @@ public class Fragment5 extends Fragment {
         inflater.inflate(R.menu.menu_tab, menu);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_default:
-                mPtv.setMode(PathTextView.Default);
-                break;
-            case R.id.action_bounce:
-                mPtv.setMode(PathTextView.Bounce);
-                break;
-            case R.id.action_oblique:
-                mPtv.setMode(PathTextView.Oblique);
-                break;
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.action_default:
+//                mPtv.setMode(PathTextView.Default);
+//                break;
+//            case R.id.action_bounce:
+//                mPtv.setMode(PathTextView.Bounce);
+//                break;
+//            case R.id.action_oblique:
+//                mPtv.setMode(PathTextView.Oblique);
+//                break;
+//        }
+//        return true;
+//    }
 }
