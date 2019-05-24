@@ -12,14 +12,12 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Property;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AnimationSet;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
@@ -48,8 +46,8 @@ public class BounceIconView extends View {
     //    文字
     private String text;
     private ArrayList<Character> charList;
-    private static final String TEST="祝大家520快乐哈";
-    private int startChar=0;
+    private static final String TEST="你再骂？有本事你去找物管啊！";
+    private int startChar=0;//文字偏移量
     private Path path;
     private Path path2;
     private TextPaint textPaint;
@@ -61,7 +59,7 @@ public class BounceIconView extends View {
     private float density;
 
     private ObjectAnimator charAnimator;
-    private int currentChar = 0;//文字偏移量
+    private int currentChar;
     public int getCurrentChar() { return currentChar; }
     public void setCurrentChar(int currentChar) { this.currentChar = currentChar; }
 
@@ -88,29 +86,60 @@ public class BounceIconView extends View {
     private Path downPath;
     private Path upPath;
 
-    public Point getNowPoint() {
-        return nowPoint;
-    }
+    private ObjectAnimator shadowAnimator1;
+    private ObjectAnimator shadowAnimator2;
+    private ObjectAnimator shadowAnimator3;
+    private ObjectAnimator shadowAnimator4;
+    private SimpleAnimatorListener shadowListener1;
+    private SimpleAnimatorListener shadowListener2;
+    private SimpleAnimatorListener shadowListener3;
+    private SimpleAnimatorListener shadowListener4;
+    private Path dPath1,dPath2,dPath3,dPath4;
+    private Path uPath1,uPath2,uPath3,uPath4;
 
-    public void setNowPoint(int x, int y) {
-        this.nowPoint = new Point(x,y);
-    }
-
-    private Point nowPoint;
     private Bitmap tempBitmap;
     private Canvas tempCanvas;
     private Paint notePaint;
+    private ArrayList<Paint> shadowPaints=new ArrayList<>();
     private int noteStartX=0;
     private int noteStartY=0;
     private int noteStartR=-90;
-   SimpleAnimatorListener listener;
+    private SimpleAnimatorListener listener;
 
     private int offsetX=-1;
+    private int offsetY=-1;
     public int getOffsetX() {return offsetX; }
     public void setOffsetX(int offsetX) { this.offsetX = offsetX;}
     public int getOffsetY() { return offsetY; }
     public void setOffsetY(int offsetY) { this.offsetY = offsetY; }
-    private int offsetY=-1;
+
+    private int shadowX1;
+    private int shadowX2;
+    private int shadowX3;
+    private int shadowX4;
+    private int shadowY1;
+    private int shadowY2;
+    private int shadowY3;
+    private int shadowY4;
+    public int getShadowX1() { return shadowX1; }
+    public int getShadowX2() { return shadowX2; }
+    public int getShadowX3() { return shadowX3; }
+    public int getShadowX4() { return shadowX4; }
+    public void setShadowX1(int shadowX1) { this.shadowX1 = shadowX1; }
+    public void setShadowX2(int shadowX2) { this.shadowX2 = shadowX2; }
+    public void setShadowX3(int shadowX3) { this.shadowX3 = shadowX3; }
+    public void setShadowX4(int shadowX4) { this.shadowX4 = shadowX4; }
+    public int getShadowY1() { return shadowY1; }
+    public int getShadowY2() { return shadowY2; }
+    public int getShadowY3() { return shadowY3; }
+    public int getShadowY4() { return shadowY4; }
+    public void setShadowY1(int shadowY1) { this.shadowY1 = shadowY1; }
+    public void setShadowY2(int shadowY2) { this.shadowY2 = shadowY2; }
+    public void setShadowY3(int shadowY3) { this.shadowY3 = shadowY3; }
+    public void setShadowY4(int shadowY4) { this.shadowY4 = shadowY4; }
+
+
+
     private int offsetR=-1;
     public int getOffsetR() { return offsetR; }
     public void setOffsetR(int offsetR) { this.offsetR = offsetR; }
@@ -145,11 +174,45 @@ public class BounceIconView extends View {
 
 //        音符
         note= BitmapFactory.decodeResource(getResources(), R.drawable.heart);
-
         notePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         notePaint.setStyle(Paint.Style.STROKE);
-        notePaint.setStrokeWidth(5);
-        notePaint.setColor(Color.GREEN);
+        notePaint.setStrokeWidth(2);
+        notePaint.setColor(Color.RED);
+
+        Paint shadowPaint1=new Paint(Paint.ANTI_ALIAS_FLAG);
+        shadowPaint1.setStyle(Paint.Style.STROKE);
+        shadowPaint1.setStrokeWidth(2);
+        shadowPaint1.setColor(Color.RED);
+        shadowPaint1.setAlpha(150);
+        shadowPaints.add(shadowPaint1);
+
+        Paint shadowPaint2=new Paint(Paint.ANTI_ALIAS_FLAG);
+        shadowPaint2.setStyle(Paint.Style.STROKE);
+        shadowPaint2.setStrokeWidth(2);
+        shadowPaint2.setColor(Color.RED);
+        shadowPaint2.setAlpha(150);
+        shadowPaints.add(shadowPaint2);
+
+        Paint shadowPaint3=new Paint(Paint.ANTI_ALIAS_FLAG);
+        shadowPaint3.setStyle(Paint.Style.STROKE);
+        shadowPaint3.setStrokeWidth(2);
+        shadowPaint3.setColor(Color.RED);
+        shadowPaint3.setAlpha(100);
+        shadowPaints.add(shadowPaint3);
+
+        Paint shadowPaint4=new Paint(Paint.ANTI_ALIAS_FLAG);
+        shadowPaint4.setStyle(Paint.Style.STROKE);
+        shadowPaint4.setStrokeWidth(2);
+        shadowPaint4.setColor(Color.RED);
+        shadowPaint4.setAlpha(80);
+        shadowPaints.add(shadowPaint4);
+
+        Paint shadowPaint5=new Paint(Paint.ANTI_ALIAS_FLAG);
+        shadowPaint5.setStyle(Paint.Style.STROKE);
+        shadowPaint5.setStrokeWidth(2);
+        shadowPaint5.setColor(Color.RED);
+        shadowPaint5.setAlpha(50);
+        shadowPaints.add(shadowPaint5);
     }
     private void initAnim(int width,int height){
         rotateAnimator=ObjectAnimator.ofInt(this,mCurrentRotate,0);
@@ -166,15 +229,13 @@ public class BounceIconView extends View {
         listener=new SimpleAnimatorListener() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                vibrateAnimator.setDuration(200);
-                setAmplitude(50);
+                vibrateAnimator.setDuration(100);
+                setAmplitude(80);
                 vibrateAnimator.setFloatValues(0,amplitude,0);
-                vibrateAnimator.start();
                 vibrateAnimator.setAutoCancel(true);
-
-                setNowPoint(mOffsetX.get(note),mOffsetY.get(note));
+                vibrateAnimator.start();
                 upPath.reset();
-                upPath.moveTo(nowPoint.x,nowPoint.y);
+                upPath.moveTo(mOffsetX.get(note),mOffsetY.get(note));
                 setPath(upPath,(int)perTextWidth/2,-100,(int)perTextWidth/2+10,-60);
                 upAnimator.cancel();
                 upAnimator=ObjectAnimator.ofInt(note,mOffsetX,mOffsetY,upPath);
@@ -184,9 +245,7 @@ public class BounceIconView extends View {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         downPath.reset();
-                        setNowPoint(mOffsetX.get(note),mOffsetY.get(note));
-                        downPath.reset();
-                        downPath.moveTo(getNowPoint().x,getNowPoint().y);
+                        downPath.moveTo(mOffsetX.get(note),mOffsetY.get(note));
                         setPath(downPath,(int)perTextWidth/2,100,(int)perTextWidth/2+10,40);
                         downAnimator.cancel();
                         downAnimator=ObjectAnimator.ofInt(note,mOffsetX,mOffsetY,downPath);
@@ -204,16 +263,142 @@ public class BounceIconView extends View {
         upPath.moveTo(0,0);
         setPath(upPath,100,100,50,50);
         upAnimator=ObjectAnimator.ofInt(note,mOffsetX,mOffsetY,upPath);
-        upAnimator.setDuration(shichang/(TEST.length())/2);
-        upAnimator.setInterpolator(new DecelerateInterpolator());
-        upAnimator.addListener(new SimpleAnimatorListener() {
+
+        uPath1=new Path();
+        dPath1=new Path();
+        shadowListener1=new SimpleAnimatorListener() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                setPath(upPath,100,100,50,50);
-                downAnimator.start();
+                uPath1.reset();
+                uPath1.moveTo(curShadowX1.get(note),curShadowY1.get(note));
+                setPath(uPath1,(int)perTextWidth/2,-100,(int)perTextWidth/2+10,-60);
+                ObjectAnimator upAnimator=ObjectAnimator.ofInt(note,curShadowX1,curShadowY1,uPath1);
+                upAnimator.setDuration(shichang/(TEST.length())/2);
+                upAnimator.setInterpolator(new DecelerateInterpolator());
+                upAnimator.addListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        dPath1.reset();
+                        dPath1.moveTo(curShadowX1.get(note),curShadowY1.get(note));
+                        setPath(dPath1,(int)perTextWidth/2,100,(int)perTextWidth/2+10,40);
+                        shadowAnimator1.cancel();
+                        shadowAnimator1=ObjectAnimator.ofInt(note,curShadowX1,curShadowY1,dPath1);
+                        shadowAnimator1.setDuration(shichang/(TEST.length())/2);
+                        shadowAnimator1.setInterpolator(new AccelerateInterpolator());
+                        shadowAnimator1.addListener(shadowListener1);
+                        shadowAnimator1.start();
+                    }
+                });
+                upAnimator.start();
             }
-        });
+        };
+        dPath2=new Path();
+        uPath2=new Path();
+        shadowListener2=new SimpleAnimatorListener() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                uPath2.reset();
+                uPath2.moveTo(curShadowX2.get(note),curShadowY2.get(note));
+                setPath(uPath2,(int)perTextWidth/2,-100,(int)perTextWidth/2+10,-60);
+                ObjectAnimator upAnimator=ObjectAnimator.ofInt(note,curShadowX2,curShadowY2,uPath2);
+                upAnimator.setDuration(shichang/(TEST.length())/2);
+                upAnimator.setInterpolator(new DecelerateInterpolator());
+                upAnimator.addListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        dPath2.reset();
+                        dPath2.moveTo(curShadowX2.get(note),curShadowY2.get(note));
+                        setPath(dPath2,(int)perTextWidth/2,100,(int)perTextWidth/2+10,40);
+                        shadowAnimator2.cancel();
+                        shadowAnimator2=ObjectAnimator.ofInt(note,curShadowX2,curShadowY2,dPath2);
+                        shadowAnimator2.setDuration(shichang/(TEST.length())/2);
+                        shadowAnimator2.setInterpolator(new AccelerateInterpolator());
+                        shadowAnimator2.addListener(shadowListener2);
+                        shadowAnimator2.start();
+                    }
+                });
+                upAnimator.start();
+            }
+        };
+        uPath3=new Path();
+        dPath3=new Path();
+        shadowListener3=new SimpleAnimatorListener() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                uPath3.reset();
+                uPath3.moveTo(curShadowX3.get(note),curShadowY3.get(note));
+                setPath(uPath3,(int)perTextWidth/2,-100,(int)perTextWidth/2+10,-60);
+                ObjectAnimator upAnimator=ObjectAnimator.ofInt(note,curShadowX3,curShadowY3,uPath3);
+                upAnimator.setDuration(shichang/(TEST.length())/2);
+                upAnimator.setInterpolator(new DecelerateInterpolator());
+                upAnimator.addListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        dPath3.reset();
+                        dPath3.moveTo(curShadowX3.get(note),curShadowY3.get(note));
+                        setPath(dPath3,(int)perTextWidth/2,100,(int)perTextWidth/2+10,40);
+                        shadowAnimator3.cancel();
+                        shadowAnimator3=ObjectAnimator.ofInt(note,curShadowX3,curShadowY3,dPath3);
+                        shadowAnimator3.setDuration(shichang/(TEST.length())/2);
+                        shadowAnimator3.setInterpolator(new AccelerateInterpolator());
+                        shadowAnimator3.addListener(shadowListener3);
+                        shadowAnimator3.start();
+                    }
+                });
+                upAnimator.start();
+            }
+        };
+        uPath4=new Path();
+        dPath4=new Path();
+        shadowListener4=new SimpleAnimatorListener() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                uPath4.reset();
+                uPath4.moveTo(curShadowX4.get(note),curShadowY4.get(note));
+                setPath(uPath4,(int)perTextWidth/2,-100,(int)perTextWidth/2+10,-60);
+                ObjectAnimator upAnimator=ObjectAnimator.ofInt(note,curShadowX4,curShadowY4,uPath4);
+                upAnimator.setDuration(shichang/(TEST.length())/2);
+                upAnimator.setInterpolator(new DecelerateInterpolator());
+                upAnimator.addListener(new SimpleAnimatorListener() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        dPath4.reset();
+                        dPath4.moveTo(curShadowX4.get(note),curShadowY4.get(note));
+                        setPath(dPath4,(int)perTextWidth/2,100,(int)perTextWidth/2+10,40);
+                        shadowAnimator4.cancel();
+                        shadowAnimator4=ObjectAnimator.ofInt(note,curShadowX4,curShadowY4,dPath4);
+                        shadowAnimator4.setDuration(shichang/(TEST.length())/2);
+                        shadowAnimator4.setInterpolator(new AccelerateInterpolator());
+                        shadowAnimator4.addListener(shadowListener4);
+                        shadowAnimator4.start();
+                    }
+                });
+                upAnimator.start();
+            }
+        };
+        shadowAnimator1=ObjectAnimator.ofInt(note,curShadowX1,curShadowY1,downPath);
+        shadowAnimator1.setDuration(shichang/(TEST.length())/2);
+        shadowAnimator1.setInterpolator(new AccelerateInterpolator());
+        shadowAnimator1.setStartDelay(100);
+        shadowAnimator1.addListener(shadowListener1);
+
+        shadowAnimator2=ObjectAnimator.ofInt(note,curShadowX2,curShadowY2,downPath);
+        shadowAnimator2.setDuration(shichang/(TEST.length())/2);
+        shadowAnimator2.setInterpolator(new AccelerateInterpolator());
+        shadowAnimator2.setStartDelay(200);
+        shadowAnimator2.addListener(shadowListener2);
+
+        shadowAnimator3=ObjectAnimator.ofInt(note,curShadowX3,curShadowY3,downPath);
+        shadowAnimator3.setDuration(shichang/(TEST.length())/2);
+        shadowAnimator3.setInterpolator(new AccelerateInterpolator());
+        shadowAnimator3.setStartDelay(300);
+        shadowAnimator3.addListener(shadowListener3);
+
+        shadowAnimator4=ObjectAnimator.ofInt(note,curShadowX4,curShadowY4,downPath);
+        shadowAnimator4.setDuration(shichang/(TEST.length())/2);
+        shadowAnimator4.setInterpolator(new AccelerateInterpolator());
+        shadowAnimator4.setStartDelay(400);
+        shadowAnimator4.addListener(shadowListener4);
 
         vibrateAnimator=ObjectAnimator.ofFloat(this,mCurVibrate,0);
         vibrateAnimator.setInterpolator(new BounceInterpolator());
@@ -222,13 +407,6 @@ public class BounceIconView extends View {
         charAnimator.setDuration(shichang);
         charAnimator.setIntValues(startChar,TEST.length());
         charAnimator.setInterpolator(new LinearInterpolator());
-        charAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-
-            }
-        });
-
         timeAnimator=ObjectAnimator.ofFloat(this,mCurrentTime,0);
         timeAnimator.setDuration(shichang);
         timeAnimator.setFloatValues(0,shichang);
@@ -240,17 +418,12 @@ public class BounceIconView extends View {
                 charAnimator.start();
                 rotateAnimator.start();
                 downAnimator.start();
+                shadowAnimator1.start();
+                shadowAnimator2.start();
+                shadowAnimator3.start();
+                shadowAnimator4.start();
             }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-                super.onAnimationRepeat(animation);
-            }
         });
         timeAnimator.start();
 
@@ -261,7 +434,7 @@ public class BounceIconView extends View {
 
         canvas.save();
         canvas.translate(defaultTextX,defaultTextY);
-        for (int i=0;i<charList.size();i++){
+        for (int i=0;i<charList.size()-1;i++){
             if (mCurChar.get(BounceIconView.this)==i){
                 path.reset();path.moveTo(0,0);path.quadTo(perTextWidth/2,vibrate,perTextWidth,0);
                 canvas.drawTextOnPath(charList.get(i).toString(),path,0,0,textPaint);
@@ -274,19 +447,74 @@ public class BounceIconView extends View {
         invalidate();
         canvas.restore();
 
+
+//本体
         canvas.save();
         canvas.translate(noteStartX+defaultTextX-perTextWidth,noteStartY+defaultTextY-textHeight*3);
         noteMatrix=new Matrix();
         tempBitmap=Bitmap.createBitmap(note.getWidth()+1,note.getHeight()+1, Bitmap.Config.ARGB_8888);
         tempCanvas=new Canvas(tempBitmap);
-        noteMatrix.postRotate(offsetR,note.getWidth()/2,note.getHeight()/2);
+        noteMatrix.postRotate(noteStartR+offsetR,note.getWidth()/2,note.getHeight()/2);
         tempCanvas.drawBitmap(note,noteMatrix,notePaint);
         noteMatrix=new Matrix();
         noteMatrix.postTranslate(offsetX,offsetY);
         canvas.drawBitmap(tempBitmap,noteMatrix,notePaint);
-        invalidate();
         canvas.restore();
 
+        //残影1
+        canvas.save();
+        canvas.translate(noteStartX+defaultTextX-perTextWidth,noteStartY+defaultTextY-textHeight*3);
+        noteMatrix=new Matrix();
+        tempBitmap=Bitmap.createBitmap(note.getWidth()+1,note.getHeight()+1, Bitmap.Config.ARGB_8888);
+        tempCanvas=new Canvas(tempBitmap);
+        noteMatrix.postRotate(-5+noteStartR+offsetR,note.getWidth()/2,note.getHeight()/2);
+        tempCanvas.drawBitmap(note,noteMatrix,notePaint);
+        noteMatrix=new Matrix();
+        noteMatrix.postTranslate(shadowX1,shadowY1);
+        canvas.drawBitmap(tempBitmap,noteMatrix,shadowPaints.get(0));
+        canvas.restore();
+
+        //残影2
+        canvas.save();
+        canvas.translate(noteStartX+defaultTextX-perTextWidth,noteStartY+defaultTextY-textHeight*3);
+        noteMatrix=new Matrix();
+        tempBitmap=Bitmap.createBitmap(note.getWidth()+1,note.getHeight()+1, Bitmap.Config.ARGB_8888);
+        tempCanvas=new Canvas(tempBitmap);
+        noteMatrix.postRotate(-10+noteStartR+offsetR,note.getWidth()/2,note.getHeight()/2);
+        tempCanvas.drawBitmap(note,noteMatrix,notePaint);
+        noteMatrix=new Matrix();
+        noteMatrix.postTranslate(shadowX2,shadowY2);
+        canvas.drawBitmap(tempBitmap,noteMatrix,shadowPaints.get(1));
+        canvas.restore();
+
+        //残影3
+        canvas.save();
+        canvas.translate(noteStartX+defaultTextX-perTextWidth,noteStartY+defaultTextY-textHeight*3);
+        noteMatrix=new Matrix();
+        tempBitmap=Bitmap.createBitmap(note.getWidth()+1,note.getHeight()+1, Bitmap.Config.ARGB_8888);
+        tempCanvas=new Canvas(tempBitmap);
+        noteMatrix.postRotate(-15+noteStartR+offsetR,note.getWidth()/2,note.getHeight()/2);
+        tempCanvas.drawBitmap(note,noteMatrix,notePaint);
+        noteMatrix=new Matrix();
+        noteMatrix.postTranslate(shadowX3,shadowY3);
+        canvas.drawBitmap(tempBitmap,noteMatrix,shadowPaints.get(2));
+        canvas.restore();
+
+        //残影4
+        canvas.save();
+        canvas.translate(noteStartX+defaultTextX-perTextWidth,noteStartY+defaultTextY-textHeight*3);
+        noteMatrix=new Matrix();
+        tempBitmap=Bitmap.createBitmap(note.getWidth()+1,note.getHeight()+1, Bitmap.Config.ARGB_8888);
+        tempCanvas=new Canvas(tempBitmap);
+        noteMatrix.postRotate(-20+noteStartR+offsetR,note.getWidth()/2,note.getHeight()/2);
+        tempCanvas.drawBitmap(note,noteMatrix,notePaint);
+        noteMatrix=new Matrix();
+        noteMatrix.postTranslate(shadowX4,shadowY4);
+        canvas.drawBitmap(tempBitmap,noteMatrix,shadowPaints.get(3));
+        canvas.restore();
+
+
+        invalidate();
     }
 
     //    工具方法
@@ -374,5 +602,70 @@ public class BounceIconView extends View {
 
         @Override
         public void set(Bitmap object, Integer value) { BounceIconView.this.setOffsetY(value); }
+    };
+
+    private Property<Bitmap,Integer> curShadowX1=new Property<Bitmap, Integer>(Integer.class,
+            "shadowX1") {
+        @Override
+        public Integer get(Bitmap object) { return BounceIconView.this.getShadowX1(); }
+
+        @Override
+        public void set(Bitmap object, Integer value) { BounceIconView.this.setShadowX1(value); }
+    };
+    private Property<Bitmap,Integer> curShadowX2=new Property<Bitmap, Integer>(Integer.class,
+            "shadowX2") {
+        @Override
+        public Integer get(Bitmap object) { return BounceIconView.this.getShadowX2(); }
+
+        @Override
+        public void set(Bitmap object, Integer value) { BounceIconView.this.setShadowX2(value); }
+    };
+    private Property<Bitmap,Integer> curShadowX3=new Property<Bitmap, Integer>(Integer.class,
+            "shadowX3") {
+        @Override
+        public Integer get(Bitmap object) { return BounceIconView.this.getShadowX3(); }
+
+        @Override
+        public void set(Bitmap object, Integer value) { BounceIconView.this.setShadowX3(value); }
+    };
+    private Property<Bitmap,Integer> curShadowX4=new Property<Bitmap, Integer>(Integer.class,
+            "shadowX4") {
+        @Override
+        public Integer get(Bitmap object) { return BounceIconView.this.getShadowX4(); }
+
+        @Override
+        public void set(Bitmap object, Integer value) { BounceIconView.this.setShadowX4(value); }
+    };
+    private Property<Bitmap,Integer> curShadowY1=new Property<Bitmap, Integer>(Integer.class,
+            "shadowY1") {
+        @Override
+        public Integer get(Bitmap object) { return BounceIconView.this.getShadowY1(); }
+
+        @Override
+        public void set(Bitmap object, Integer value) { BounceIconView.this.setShadowY1(value); }
+    };
+    private Property<Bitmap,Integer> curShadowY2=new Property<Bitmap, Integer>(Integer.class,
+            "shadowY2") {
+        @Override
+        public Integer get(Bitmap object) { return BounceIconView.this.getShadowY2(); }
+
+        @Override
+        public void set(Bitmap object, Integer value) { BounceIconView.this.setShadowY2(value); }
+    };
+    private Property<Bitmap,Integer> curShadowY3=new Property<Bitmap, Integer>(Integer.class,
+            "shadowY3") {
+        @Override
+        public Integer get(Bitmap object) { return BounceIconView.this.getShadowY3(); }
+
+        @Override
+        public void set(Bitmap object, Integer value) { BounceIconView.this.setShadowY3(value); }
+    };
+    private Property<Bitmap,Integer> curShadowY4=new Property<Bitmap, Integer>(Integer.class,
+            "shadowY4") {
+        @Override
+        public Integer get(Bitmap object) { return BounceIconView.this.getShadowY4(); }
+
+        @Override
+        public void set(Bitmap object, Integer value) { BounceIconView.this.setShadowY4(value); }
     };
 }
