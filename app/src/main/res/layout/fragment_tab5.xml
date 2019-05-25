@@ -9,20 +9,18 @@
     android:gravity="center"
     tools:context=".view.TabActivity">
 
-
-
     <com.lovejjfg.circle.widget.BounceIconView
         android:id="@+id/ptv"
-
         android:layout_gravity="center_horizontal"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="600dp"
         android:visibility="visible" />
-    <TextView
+    <com.lovejjfg.circle.anim.FadingTextView
+        android:id="@+id/ftv"
+        android:layout_gravity="center_horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        />
+        android:layout_height="400dp"
+        android:visibility="visible"/>
 
     <com.lovejjfg.circle.widget.IndexBar
         android:id="@+id/index"

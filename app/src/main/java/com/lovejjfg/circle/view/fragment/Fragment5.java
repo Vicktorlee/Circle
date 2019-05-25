@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lovejjfg.circle.R;
+import com.lovejjfg.circle.anim.FadingTextView;
 import com.lovejjfg.circle.anim.drawable.StrokeGradientDrawable;
 import com.lovejjfg.circle.widget.BounceIconView;
 import com.lovejjfg.circle.widget.IndexBar;
@@ -34,6 +35,8 @@ public class Fragment5 extends Fragment {
      */
     @BindView(R.id.ptv)
     BounceIconView mPtv;
+    @BindView(R.id.ftv)
+    FadingTextView mFtv;
     @BindView(R.id.index)
     IndexBar mIndex;
     private static final String ARG_SECTION_NUMBER = "section_number";
